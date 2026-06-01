@@ -20,6 +20,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.util.AssertionErrors.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
@@ -37,6 +38,25 @@ public class ProductControllerTest {
 
    @Autowired
    private ProductController productController;
+
+   @Test
+   void createProduct_Api_Success() throws Exception {
+       Category category = new Category("Category 1", "Description 1");
+       Product product = new Product("Product 1", "Description 1", 10.0, "imageUrl1", category);
+       ProductDTO productDTO = product.toProductDTO();
+       when(productService.createProduct(any(Product.class))).thenReturn(product);
+
+       String requestBody = objectMapper.writeValueAsString(productDTO);
+       String expectedResponse = objectMapper.writeValueAsString(productDTO);
+
+       MvcResult result = mockMvc.perform(post("/products")
+                       .contentType("application/json")
+                       .content(requestBody))
+               .andExpect(status().isOk())
+               .andExpect(content().string(expectedResponse))
+               .andExpect(r -> assertEquals("--->", expectedResponse, r.getResponse().getContentAsString()))
+               .andReturn();
+   }
 
     @Test
     void getAllProduct_Api_Success() throws Exception {
