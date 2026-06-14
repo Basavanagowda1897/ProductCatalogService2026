@@ -47,6 +47,7 @@ public class ProductControllerTest {
        when(productService.createProduct(any(Product.class))).thenReturn(product);
 
        String requestBody = objectMapper.writeValueAsString(productDTO);
+
        String expectedResponse = objectMapper.writeValueAsString(productDTO);
 
        MvcResult result = mockMvc.perform(post("/products")
