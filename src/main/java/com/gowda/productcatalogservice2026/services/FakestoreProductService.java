@@ -6,6 +6,8 @@ import com.gowda.productcatalogservice2026.exceptions.ProductNotExistException;
 import com.gowda.productcatalogservice2026.models.Product;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +24,13 @@ import java.util.List;
 @Service
 public class FakestoreProductService implements IProductService {
 
-//    @Autowired
-//    private RestTemplate restTemplate;
+    @Autowired
+    private RestTemplate restTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
+    private FakestoreProductDto fakestoreProductDto;
+//    @Value("${redis.products.section}")
+//    private String productsSection;
+
 
 //    public <T> ResponseEntity<T> putForEntity(String url, @Nullable Object request,
 //                                              Class<T> responseType, @Nullable Object... uriVariables) throws RestClientException {
@@ -34,6 +41,10 @@ public class FakestoreProductService implements IProductService {
 //    }
     @Autowired
     private FakeStoreAPIclient fakeStoreAPIclient;
+
+    public FakestoreProductService(RestTemplate restTemplate, RedisTemplate<String, Object> redisTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     public List<Product> getAllProducts() {
         List<Product> products = new ArrayList<>();
@@ -53,6 +64,10 @@ public class FakestoreProductService implements IProductService {
     }
 
     public Product getProductById(Long id) throws ProductNotExistException {
+        Product product = (Product) redisTemplate.opsForHash().get("PRODUCTS", "PRODUCT" + id);
+        if (product != null) {
+            return product;
+        }
         ResponseEntity<FakestoreProductDto> fakestoreProductDto = fakeStoreAPIclient.requestForEntity(
                 HttpMethod.GET,
                 "https://fakestoreapi.com/products/{id}",
@@ -68,10 +83,12 @@ public class FakestoreProductService implements IProductService {
                 throw new ProductNotExistException("Product with id" + id + "does'nt exist");
             }
         } else {
-            return null;
+            Product products = fakestoreProductDto.getBody().toProduct();
+            redisTemplate.opsForHash().put("PRODUCTS","PRODUCT" + id, product);
+            //redisTemplate.opsForHash().put(productsSection,"PRODUCT" + id, product);
+            return product;
         }
     }
-
     public Product createProduct(Product product) {
         return null;
     }
