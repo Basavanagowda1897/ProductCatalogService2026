@@ -1,5 +1,7 @@
 package com.gowda.productcatalogservice2026.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.gowda.productcatalogservice2026.dtos.CategoryDTO;
 import com.gowda.productcatalogservice2026.dtos.FakestoreProductDto;
 import com.gowda.productcatalogservice2026.dtos.ProductDTO;
@@ -18,6 +20,7 @@ public class Product extends BaseModel{
     private String imageUrl;
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @Fetch(FetchMode.SELECT)
+    @JsonManagedReference
     private Category category;
 
     public Product() {
