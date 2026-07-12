@@ -69,5 +69,12 @@ public class ProductController {
      @ExceptionHandler(ProductNotExistException.class)
     public ResponseEntity<String> handleProductNotExistException(ProductNotExistException e){
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-     }
+    }
+
+//    @GetMapping("/products/{productId}/{userID}")
+//    public ProductDTO getProductBasedOnUserRole(@PathVariable Long productId, @PathVariable Long userId) {
+//        System.out.println("Call reaching this api");
+//        Product product = productService.getProductBasedOnUserScope(productId, userId);
+//        return null;
+//    }
 }

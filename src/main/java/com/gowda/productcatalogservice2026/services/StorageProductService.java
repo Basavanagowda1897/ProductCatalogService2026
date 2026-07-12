@@ -66,4 +66,17 @@ public class StorageProductService implements IProductService{
             return true;
         }
     }
+//    public Product getProductBasedOnUserScope(Long productId, Long userId) {
+//        Optional<Product> optionalProduct = productRepo.findById(productId);
+//        try {
+//            UserDTO userDto = restTemplate.getForEntity(
+//                    "https://UserAuthService/users/{userID}",
+//                    UserDTO.class,
+//                    userId).getBody();
+//        }catch(Exception e){
+//                System.out.println(e.getMessage());
+//            }
+//            return null;
+//        }
+//    }
 }
